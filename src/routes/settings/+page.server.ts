@@ -3,7 +3,7 @@ import { LINEAR_API_KEY_NAME } from '$lib/constants/formDataNames';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load = (async ({ cookies }) => {
-  const apiKey = JSON.parse(cookies.get(LINEAR_API_COOKIE_KEY_NAME) ?? '');
+  const apiKey = JSON.parse(cookies.get(LINEAR_API_COOKIE_KEY_NAME) ?? 'null') ?? '';
   return { apiKey };
 }) satisfies PageServerLoad;
 
@@ -13,6 +13,7 @@ export const actions: Actions = {
     const apiKey = formData.get(LINEAR_API_KEY_NAME);
 
     if (false) {
+      // check https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action-validation-errors
       return {
         success: false,
         message: 'Something went wrong. Linear api key was not updated!'

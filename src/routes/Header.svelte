@@ -14,6 +14,9 @@
 			<li aria-current={$page.url.pathname === '/about' ? 'page' : undefined}>
 				<a href="/about">About</a>
 			</li>
+			<li aria-current={$page.url.pathname === '/release-notes-builder' ? 'page' : undefined}>
+				<a href="/release-notes-builder">Release-notes-builder</a>
+			</li>
 			<li aria-current={$page.url.pathname === '/settings' ? 'page' : undefined}>
 				<a href="/settings">Settings</a>
 			</li>
@@ -92,5 +95,6 @@
 
 	a:hover {
 		color: var(--color-theme-1);
+		text-decoration: underline;
 	}
 </style>
