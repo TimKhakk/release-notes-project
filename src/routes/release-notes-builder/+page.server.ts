@@ -22,25 +22,6 @@ export const load = (async ({ cookies }) => {
 	const linearClient = new LinearClient({ apiKey });
 	const graphQLClient = linearClient.client;
 
-	async function processQueryIssues() {
-		const res = await graphQLClient.rawRequest(queryIssues, {
-			filter: {
-				team: {
-					name: {
-						eq: 'Front-End'
-					}
-				},
-				state: {
-					name: {
-						eq: 'On Whiskey'
-					}
-				}
-			}
-		});
-		return (res.data?.issues?.nodes ?? []) as any[];
-	}
-	const issues = processQueryIssues();
-
 	async function loadTeams() {
 		const states = await graphQLClient.rawRequest(queryTeams);
 
@@ -69,11 +50,31 @@ export const load = (async ({ cookies }) => {
 	const scopeStateId =
 		JSON.parse(cookies.get(SCOPE_STATE_ID_COOKIE_KEY_NAME) ?? 'null') ?? states[0].id;
 
+  async function processQueryIssues() {
+    const res = await graphQLClient.rawRequest(queryIssues, {
+      filter: {
+        team: {
+          id: {
+            eq: scopeTeamId,
+          }
+        },
+        state: {
+          id: {
+            eq: scopeStateId,
+          }
+        }
+      }
+    });
+    return (await res.data?.issues?.nodes ?? []) as any[];
+  }
+  const issues = await processQueryIssues();
+
 	return {
 		scopeStateId,
 		scopeTeamId,
 		states,
-		teams
+		teams,
+    issues,
 	};
 }) satisfies PageServerLoad;
 

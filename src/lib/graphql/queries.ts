@@ -31,6 +31,7 @@ export const queryIssues = `
         id
         title
         state {
+          id
           color
           name
         }
