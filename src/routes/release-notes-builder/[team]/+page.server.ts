@@ -9,9 +9,10 @@ import { queryWorkflowState } from '$lib/graphql/queries';
 import { queryTeam, queryTeamVariables, type ProjectNode } from '$lib/graphql/queries/queryTeam';
 import { connect } from '$lib/linearClient/connect';
 import type { Actions, PageServerLoad } from './$types';
-import { reverse, sortBy } from 'lodash';
+import lodash from 'lodash';
 import { redirect } from '@sveltejs/kit';
 
+const { reverse, sortBy } = lodash;
 const STAGES = ['whiskey', 'tango', 'foxtrot'];
 
 export const load = (async ({ cookies, url, params }) => {

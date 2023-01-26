@@ -181,7 +181,7 @@
 				</h1>
 				<br />
 			{/if}
-			{#each preview as project}
+			{#each preview as project, idx}
 				<div class="flex flex-col text-base">
 					<h4 class="font-bold">{project.name}</h4>
 
@@ -191,10 +191,12 @@
 						{/each}
 					</ul>
 				</div>
+				{#if idx !== preview.length - 1}
+					<br />
+				{/if}
 			{/each}
 
 			{#if preview.length && (bussinesNotesURL || qaNotesURL)}
-				<br />
 				<hr />
 				<br />
 			{/if}
