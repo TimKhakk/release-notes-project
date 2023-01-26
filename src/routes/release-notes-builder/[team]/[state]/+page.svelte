@@ -191,9 +191,7 @@
 						{/each}
 					</ul>
 				</div>
-				{#if idx !== preview.length - 1}
-					<br />
-				{/if}
+				<br />
 			{/each}
 
 			{#if preview.length && (bussinesNotesURL || qaNotesURL)}
