@@ -17,6 +17,7 @@
 		"@sveltejs/adapter-auto": "^1.0.0",
 		"@sveltejs/kit": "^1.0.0",
 		"@types/cookie": "^0.5.1",
+		"@types/lodash": "^4.14.191",
 		"autoprefixer": "^10.4.13",
 		"postcss": "^8.4.21",
 		"prettier": "^2.8.0",
@@ -31,6 +32,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@linear/sdk": "^1.22.0"
+		"@linear/sdk": "^1.22.0",
+		"dayjs": "^1.11.7",
+		"lodash": "^4.17.21"
 	}
 }
