@@ -1,12 +1,17 @@
 import { LINEAR_API_COOKIE_KEY_NAME } from '$lib/constants/cookieKeyNames';
 import { queryTeams } from '$lib/graphql/queries';
 import { LinearClient } from '@linear/sdk';
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 const TEAMS = ['front', 'back'];
 
 export const load = (async ({ cookies }) => {
 	const apiKey = JSON.parse(cookies.get(LINEAR_API_COOKIE_KEY_NAME) ?? 'null');
+
+	if (!apiKey) {
+		throw redirect(300, './settings')
+	}
 
 	const linearClient = new LinearClient({ apiKey });
 	const graphQLClient = linearClient.client;

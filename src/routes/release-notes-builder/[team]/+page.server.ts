@@ -9,6 +9,8 @@ import { queryWorkflowState } from '$lib/graphql/queries';
 import { queryTeam, queryTeamVariables, type ProjectNode } from '$lib/graphql/queries/queryTeam';
 import { connect } from '$lib/linearClient/connect';
 import type { Actions, PageServerLoad } from './$types';
+import { reverse, sortBy } from 'lodash';
+import { redirect } from '@sveltejs/kit';
 
 const STAGES = ['whiskey', 'tango', 'foxtrot'];
 
@@ -19,7 +21,9 @@ export const load = (async ({ cookies, url, params }) => {
 
 	const apiKey = parseFromCookies(LINEAR_API_COOKIE_KEY_NAME, cookies);
 
-	if (apiKey === null) return;
+	if (!apiKey) {
+		throw redirect(300, './settings')
+	}
 
 	const graphQLClient = connect({ apiKey });
 
@@ -47,11 +51,18 @@ export const load = (async ({ cookies, url, params }) => {
 	}
 
 	const allStates = await loadWorkFlowState();
-	const states = allStates.filter(({ name }) =>
-		STAGES.some((stage) => name.toLowerCase().includes(stage))
-	);
+	const states = reverse(sortBy(allStates
+		.filter(({ name }) =>
+			STAGES.some((stage) => name.toLowerCase().includes(stage))
+		), 'name'));
 
-	const scopeStateId = parseFromCookies(SCOPE_STATE_ID_COOKIE_KEY_NAME, cookies) ?? states[0].id;
+	const scopeStateIdFromCookies = parseFromCookies(SCOPE_STATE_ID_COOKIE_KEY_NAME, cookies);
+
+	const isInAllState = (scopeId: string | null): scopeId is string => {
+		return Boolean(states.find(({ id }) => id === scopeStateIdFromCookies))
+	}
+
+	const scopeStateId = isInAllState(scopeStateIdFromCookies) ? scopeStateIdFromCookies : states[0].id;
 
 	async function loadTeamWithIssuesByState() {
 		const res = await graphQLClient.rawRequest(
@@ -62,8 +73,7 @@ export const load = (async ({ cookies, url, params }) => {
 		return ((await res.data?.team?.projects?.nodes) ?? []) as ProjectNode[];
 	}
 
-	// const allProjects = await loadTeamWithIssuesByState();
-	const allProjects: ProjectNode[] = [];
+	const allProjects = await loadTeamWithIssuesByState();
 
 	const projects = allProjects.filter((pr) => pr.issues?.nodes?.length);
 

@@ -3,11 +3,11 @@
 	import { actionPathGenerator } from '$lib/actions/actionPathGenerator';
 	import Button from '$lib/components/Button.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
-	import Input from '$lib/components/Checkbox.svelte';
 	import { SET_SCOPE_STATE_ID_ACTION_KEY_NAME } from '$lib/constants/actionKeyNames';
 	import { SCOPE_STATE_ID_KEY_NAME } from '$lib/constants/formDataNames';
 	import { mockProjects } from '$lib/constants/mockProjects';
-	import type { PageData, ActionData } from './$types';
+	import type { PageData } from './$types';
+	import dayjs from 'dayjs';
 
 	export let data: PageData;
 
@@ -37,7 +37,10 @@
 		};
 	}
 
-	// let preview: StateItem[] = prepareState(mockProjects);
+	let heading: boolean = true;
+	let bussinesNotesURL = '';
+	let qaNotesURL = '';
+	let releaseNotesDate = new Date();
 	let preview: ProjectNode[] = [];
 
 	const handleProjectClick = (pr: ProjectNode) => {
@@ -103,6 +106,11 @@
 
 		return Boolean(issueFromState);
 	};
+
+	const prepareStageName = (name: string) => name.toLowerCase().replace('on', '').trim();
+	const capitalize = (str: string) => (str.length ? str[0].toUpperCase() + str.slice(1) : '');
+	$: stageName = data.states?.find(({ id }) => id === data.scopeStateId)?.name ?? '';
+	$: preparedStageName = capitalize(prepareStageName(stageName));
 </script>
 
 {#if data.states}
@@ -121,10 +129,47 @@
 	</div>
 {/if}
 
-{#if mockProjects.length}
+<div class="flex items-center gap-4 mb-5">
+	<label class="cursor-pointer text-amber-900 hover:text-amber-600">
+		<span
+			class="border-2 border-svelte rounded inline-flex hover:border-svelte/50 transition"
+			class:bg-svelte={heading}
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 24 24"
+				class="w-3 h-3 fill-white"
+				class:fill-transparent={!heading}
+				><path fill="none" d="M0 0h24v24H0z" /><path
+					class="stroke-2"
+					d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"
+				/></svg
+			></span
+		>
+		Release notes heading
+		<input type="checkbox" class="appearance-none" bind:checked={heading} />
+	</label>
+
+	<label>
+		Date:
+		<input type="date" bind:value={releaseNotesDate} />
+	</label>
+</div>
+
+<label class="grid grid-cols-[200px_1fr] items-center gap-2 my-1">
+	<span>Bussines Notes link:</span>
+	<input class="border px-1 py-0.5" type="url" bind:value={bussinesNotesURL} />
+</label>
+
+<label class="grid grid-cols-[200px_1fr] items-center gap-2 my-1 mb-10">
+	<span>QA Notes link:</span>
+	<input class="border px-1 py-0.5" type="url" bind:value={qaNotesURL} />
+</label>
+
+{#if data?.projects?.length}
 	<div class="grid grid-cols-2">
 		<div class="flex flex-col gap-5">
-			{#each mockProjects as project}
+			{#each data.projects as project}
 				<div class="flex flex-col gap-1">
 					<Checkbox
 						checked={resolveProjectChecked(project)}
@@ -151,8 +196,14 @@
 		</div>
 
 		<div class="flex flex-col px-1 py-0.5" contenteditable="true">
+			{#if heading}
+				<h1 class="text-xl">
+					Release notes ({dayjs(releaseNotesDate).format('MMMM DD')}, {preparedStageName})
+				</h1>
+				<br />
+			{/if}
 			{#each preview as project}
-				<div class="flex flex-col">
+				<div class="flex flex-col text-base">
 					<h4 class="font-bold">{project.name}</h4>
 
 					<ul class="flex flex-col ml-6">
@@ -162,6 +213,31 @@
 					</ul>
 				</div>
 			{/each}
+
+			{#if preview.length && (bussinesNotesURL || qaNotesURL)}
+				<br />
+				<hr />
+				<br />
+			{/if}
+
+			{#if bussinesNotesURL && bussinesNotesURL.startsWith('https://')}
+				<div>
+					<a
+						on:click|preventDefault
+						class="flex w-max text-blue-400 hover:underline cursor-pointer"
+						href={bussinesNotesURL}>Bussines Notes</a
+					>
+				</div>
+			{/if}
+			{#if qaNotesURL && qaNotesURL.startsWith('https://')}
+				<div>
+					<a
+						on:click|preventDefault
+						class="flex w-max text-blue-400 hover:underline cursor-pointer"
+						href={qaNotesURL}>QA Notes</a
+					>
+				</div>
+			{/if}
 		</div>
 	</div>
 {:else}
