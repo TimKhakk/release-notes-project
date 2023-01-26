@@ -62,7 +62,8 @@ export const load = (async ({ cookies, url, params }) => {
 		return ((await res.data?.team?.projects?.nodes) ?? []) as ProjectNode[];
 	}
 
-	const allProjects = await loadTeamWithIssuesByState();
+	// const allProjects = await loadTeamWithIssuesByState();
+	const allProjects: ProjectNode[] = [];
 
 	const projects = allProjects.filter((pr) => pr.issues?.nodes?.length);
 
