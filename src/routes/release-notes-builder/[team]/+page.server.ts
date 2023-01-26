@@ -64,40 +64,8 @@ export const load = (async ({ cookies, url, params }) => {
 
 	const scopeStateId = isInAllState(scopeStateIdFromCookies) ? scopeStateIdFromCookies : states[0].id;
 
-	async function loadTeamWithIssuesByState() {
-		const res = await graphQLClient.rawRequest(
-			queryTeam,
-			queryTeamVariables(scopeTeamId, scopeStateId)
-		);
-
-		return ((await res.data?.team?.projects?.nodes) ?? []) as ProjectNode[];
-	}
-
-	const allProjects = await loadTeamWithIssuesByState();
-
-	const projects = allProjects.filter((pr) => pr.issues?.nodes?.length);
-
 	return {
 		states,
 		scopeStateId,
-		projects
 	};
 }) satisfies PageServerLoad;
-
-export const actions: Actions = {
-	[SET_SCOPE_STATE_ID_ACTION_KEY_NAME]: async ({ request, cookies }) => {
-		const formData = await request.formData();
-		const stateId = formData.get(SCOPE_STATE_ID_KEY_NAME);
-
-		if (!stateId) {
-			return {
-				success: false,
-				message: 'failed to update state id'
-			};
-		}
-
-		cookies.set(SCOPE_STATE_ID_COOKIE_KEY_NAME, JSON.stringify(stateId));
-
-		return { success: true, message: '' };
-	}
-};
