@@ -9,6 +9,8 @@ query QueryTeam($teamId: String!, $filter: IssueFilter) {
           nodes {
             id
             title
+						url
+						identifier
           }
         }
       }
@@ -20,12 +22,17 @@ export type ProjectNode = {
 	id: string;
 	name: string;
 	issues: {
-		nodes: {
-			id: string;
-			title: string;
-		}[];
+		nodes: IssueNode[];
 	};
 };
+
+export interface IssueNode {
+	id: string;
+	title: string;
+	url: string;
+	identifier: string;
+}
+
 
 export function queryTeamVariables(teamId: string, stateId: string) {
 	return {

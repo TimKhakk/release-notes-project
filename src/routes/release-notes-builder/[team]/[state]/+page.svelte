@@ -3,34 +3,10 @@
 	import type { PageData } from './$types';
 	import dayjs from 'dayjs';
 	import { page } from '$app/stores';
+	import type { IssueNode, ProjectNode } from '$lib/graphql/queries/queryTeam';
 
 	export let data: PageData;
-
-	interface StateItem {
-		id: string;
-		name: string;
-		checked: boolean;
-		issues: {
-			nodes: {
-				id: string;
-				title: string;
-				checked: boolean;
-			}[];
-		};
-	}
-
-	interface IssueNode {
-		id: string;
-		title: string;
-	}
-
-	interface ProjectNode {
-		id: string;
-		name: string;
-		issues: {
-			nodes: IssueNode[];
-		};
-	}
+	console.log('data', data);
 
 	let heading: boolean = true;
 	let bussinesNotesURL = '';
@@ -125,7 +101,7 @@
 				/></svg
 			></span
 		>
-		Release notes heading
+		Release Notes heading
 		<input type="checkbox" class="appearance-none" bind:checked={heading} />
 	</label>
 
@@ -176,18 +152,25 @@
 
 		<div class="flex flex-col px-1 py-0.5" contenteditable="true">
 			{#if heading}
-				<h1 class="text-xl">
-					Release notes ({dayjs(releaseNotesDate).format('MMMM DD')}, {preparedStageName})
+				<h1 class="text-[20px]">
+					Release Notes ({dayjs(releaseNotesDate).format('MMMM DD')}, {preparedStageName})
 				</h1>
 				<br />
 			{/if}
 			{#each preview as project, idx}
-				<div class="flex flex-col text-base">
-					<h4 class="font-bold">{project.name}</h4>
+				<div class="flex flex-col text-[14px]">
+					<h4 class="font-bold"><strong>{project.name}</strong></h4>
 
 					<ul class="flex flex-col ml-6">
 						{#each project.issues.nodes as issue}
-							<li>{issue.title}</li>
+							<li>
+								<a
+									on:click|preventDefault
+									class="inline-flex w-max text-blue-400 hover:underline cursor-pointer"
+									href={issue.url}>{issue.identifier}</a
+								>
+								{issue.title}
+							</li>
 						{/each}
 					</ul>
 				</div>
@@ -200,22 +183,22 @@
 			{/if}
 
 			{#if bussinesNotesURL && bussinesNotesURL.startsWith('https://')}
-				<div>
+				<p>
 					<a
 						on:click|preventDefault
-						class="flex w-max text-blue-400 hover:underline cursor-pointer"
+						class="flex w-max text-blue-400 hover:underline cursor-pointer text-[14px]"
 						href={bussinesNotesURL}>Bussines Notes</a
 					>
-				</div>
+				</p>
 			{/if}
 			{#if qaNotesURL && qaNotesURL.startsWith('https://')}
-				<div>
+				<p>
 					<a
 						on:click|preventDefault
-						class="flex w-max text-blue-400 hover:underline cursor-pointer"
+						class="flex w-max text-blue-400 hover:underline cursor-pointer text-[14px]"
 						href={qaNotesURL}>QA Notes</a
 					>
-				</div>
+				</p>
 			{/if}
 		</div>
 	</div>
