@@ -159,7 +159,7 @@
 			{/if}
 			{#each preview as project, idx}
 				<div class="flex flex-col text-[14px]">
-					<h4 class="font-bold"><strong>{project.name}</strong></h4>
+					<h4><strong>{project.name}</strong></h4>
 
 					<ul class="flex flex-col ml-6">
 						{#each project.issues.nodes as issue}
